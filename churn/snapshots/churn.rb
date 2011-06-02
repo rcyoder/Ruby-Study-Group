@@ -28,8 +28,7 @@ end
 
 # return the number in this string: "       ui2 **** (19)"
 def churn_line_to_int(line)
-  changes = /\((\d+)\)/.match(line)
-  changes[1].to_i
+  /\((\d+)\)/.match(line)[1].to_i
   # line =~ /\((\d+)\)/
   # $1.to_i
 end
