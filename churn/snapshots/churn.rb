@@ -22,8 +22,8 @@ def subsystem_line(name, count)
   "#{name.rjust(14)} #{asterisks_for(count)} (#{count})"
 end
 
-def change_count_for(name)
-  extract_change_count_from(svn_log(name))
+def change_count_for(name, date)
+  extract_change_count_from(svn_log(name, date))
 end
 
 def svn_date(t)
@@ -41,10 +41,10 @@ def extract_change_count_from(log_text)
 end
 
 def svn_log(subsystem, start_date)
-#  File.open("subversion-output.txt").read
-  timespan = "--revision 'HEAD:{#{start_date}}'"
-  root = "svn://rubyforge.org/var/svn/churn-demo"
-  `svn log #{timespan} #{root}/#{subsystem}`
+  File.open("svn_logs/subversion-output-#{subsystem}.txt").read
+  # timespan = "--revision 'HEAD:{#{start_date}}'"
+  # root = "svn://rubyforge.org/var/svn/churn-demo"
+  # `svn log #{timespan} #{root}/#{subsystem}`
 end
 
 if $0 == __FILE__    #(1)
@@ -54,6 +54,6 @@ if $0 == __FILE__    #(1)
 
   puts header(start_date)                   #(4)
   subsystem_names.each do | name |
-    puts subsystem_line(name, change_count_for(name)) #(5)  
+    puts subsystem_line(name, change_count_for(name, start_date)) #(5)  
   end
 end
