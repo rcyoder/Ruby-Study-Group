@@ -26,6 +26,22 @@ def change_count_for(name, date)
   extract_change_count_from(svn_log(name, date))
 end
 
+# return the number in this string: "       ui2 **** (19)"
+def churn_line_to_int(line)
+  changes = /\((\d+)\)/.match(line)
+  changes[1].to_i
+  # line =~ /\((\d+)\)/
+  # $1.to_i
+end
+
+def order_by_descending_change_count(lines)
+  lines.sort do |line_a, line_b|
+    line_a_count = churn_line_to_int(line_a)
+    line_b_count = churn_line_to_int(line_b)
+    - (line_a_count <=> line_b_count)
+  end
+end
+
 def svn_date(t)
   t.strftime("%Y-%m-%d")
 end
@@ -53,7 +69,8 @@ if $0 == __FILE__    #(1)
   start_date = month_before(Time.now)       #(3)
 
   puts header(start_date)                   #(4)
-  subsystem_names.each do | name |
-    puts subsystem_line(name, change_count_for(name, start_date)) #(5)  
+  subsystem_lines = subsystem_names.collect do | name |
+    subsystem_line(name, change_count_for(name, start_date)) #(5)  
   end
+  puts order_by_descending_change_count(subsystem_lines)
 end

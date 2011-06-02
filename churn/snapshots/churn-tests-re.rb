@@ -50,6 +50,7 @@ class ChurnTests < Test::Unit::TestCase
   def test_churn_line_to_int_extracts_parenthesized_change_count
     assert_equal(19, churn_line_to_int("       ui2 **** (19)"))
     assert_equal(9, churn_line_to_int("       ui ** (9)"))
+    assert_equal(10020, churn_line_to_int("       ui ** (10020)"))
   end
 
 
