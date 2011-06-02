@@ -26,7 +26,7 @@ def change_count_for(name, date)
   extract_change_count_from(svn_log(name, date))
 end
 
-# return the number in this string: "       ui2 **** (19)"
+# return the number in the parentheses from this string: "       ui2 **** (19)"
 def churn_line_to_int(line)
   /\((\d+)\)/.match(line)[1].to_i
   # line =~ /\((\d+)\)/
