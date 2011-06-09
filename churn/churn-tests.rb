@@ -93,25 +93,19 @@ class FormatterTests < Test::Unit::TestCase
   end
 
 
-  def test_churn_line_to_int_extracts_parenthesized_change_count
-    assert_equal(19, @formatter.churn_line_to_int("       ui2 **** (19)"))
-    assert_equal(9, @formatter.churn_line_to_int("       ui ** (9)"))
-  end
-
-
-  def test_order_by_descending_change_count
-    original = [ "all that really matters is the number in parens - (1)",
-                 "     inventory  (0)",
-                 "            ui ** (12)" ]
-
-    expected = [ "            ui ** (12)",
-                 "all that really matters is the number in parens - (1)",
-                 "     inventory  (0)" ]
-
-    actual = @formatter.order_by_descending_change_count(original)
-
-    assert_equal(expected, actual)
-  end
+  # def test_order_by_descending_change_count
+  #   original = [ "all that really matters is the number in parens - (1)",
+  #                "     inventory  (0)",
+  #                "            ui ** (12)" ]
+  # 
+  #   expected = [ "            ui ** (12)",
+  #                "all that really matters is the number in parens - (1)",
+  #                "     inventory  (0)" ]
+  # 
+  #   actual = @formatter.order_by_descending_change_count(original)
+  # 
+  #   assert_equal(expected, actual)
+  # end
 
 end
 

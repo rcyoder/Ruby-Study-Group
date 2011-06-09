@@ -42,7 +42,7 @@ end
 class Formatter
   
   def initialize
-    @subsystem_lines = []
+    @subsystem_array = []
   end
 
   def use_date(start_date)
@@ -64,27 +64,27 @@ class Formatter
     "#{name.rjust(14)} #{asterisks_for(count)} (#{count})"
   end
 
-  # return the number in the parentheses from this string: "       ui2 **** (19)"
-  def churn_line_to_int(line)
-    /\((\d+)\)/.match(line)[1].to_i
-    # line =~ /\((\d+)\)/
-    # $1.to_i
-  end
-
-  def order_by_descending_change_count(lines)
-    lines.sort do |line_a, line_b|
-      line_a_count = churn_line_to_int(line_a)
-      line_b_count = churn_line_to_int(line_b)
-      - (line_a_count <=> line_b_count)
+  # Sort our array of line info [name, count] by the count
+  def order_by_descending_change_count(data)
+    data.sort do |a, b|
+        count1 = a.last
+        count2 = b.last
+      - (count1 <=> count2)
     end
   end
   
   def use_subsystem_with_change_count(name, count)
-    @subsystem_lines << subsystem_line(name, count)
+    @subsystem_array << [name, count]
   end
   
-  def output
-    [header] + order_by_descending_change_count(@subsystem_lines)
+  def to_text
+    output = [header]
+    order_by_descending_change_count(@subsystem_array).each do |element|
+      name = element.first
+      count = element.last
+      output << subsystem_line(name, count)
+    end
+    output
   end
 
 end
@@ -99,5 +99,5 @@ if $0 == __FILE__    #(1)
   subsystem_names.collect do | name |
     formatter.use_subsystem_with_change_count(name, repository.change_count_for(name, start_date)) #(5)  
   end
-  puts formatter.output
+  puts formatter.to_text
 end
