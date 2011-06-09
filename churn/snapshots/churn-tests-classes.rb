@@ -4,7 +4,7 @@
 # Visit http://www.pragmaticprogrammer.com/titles/bmsft for more book information.
 #---
 require 'test/unit' 
-require 'churn'     
+require '../churn'     
 
 # If I grouped the methods under test, it seems sensible to also group
 # the methods testing them, so I put them all inside their own test
