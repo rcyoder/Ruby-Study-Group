@@ -39,45 +39,49 @@ def month_before(t)
   t - (28*60*60*24)
 end
 
-def header(d)
-#  "Changes since " + d.strftime("%Y-%m-%d")+":"
-#  "Changes since #{d.strftime("%Y-%m-%d")}:"
-#  d.strftime("Changes since %Y-%m-%d:")'
-"Changes since #{d}:"
-end
+class Formatter
 
-def asterisks_for(n)
-  '*'.*((n/5.0).round)   #return n/5 asterisks, rounded up or down
-end
-
-def subsystem_line(name, count)
-  "#{name.rjust(14)} #{asterisks_for(count)} (#{count})"
-end
-
-# return the number in the parentheses from this string: "       ui2 **** (19)"
-def churn_line_to_int(line)
-  /\((\d+)\)/.match(line)[1].to_i
-  # line =~ /\((\d+)\)/
-  # $1.to_i
-end
-
-def order_by_descending_change_count(lines)
-  lines.sort do |line_a, line_b|
-    line_a_count = churn_line_to_int(line_a)
-    line_b_count = churn_line_to_int(line_b)
-    - (line_a_count <=> line_b_count)
+  def header(d)
+    #  "Changes since " + d.strftime("%Y-%m-%d")+":"
+    #  "Changes since #{d.strftime("%Y-%m-%d")}:"
+    #  d.strftime("Changes since %Y-%m-%d:")'
+    "Changes since #{d}:"
   end
+
+  def asterisks_for(n)
+    '*'.*((n/5.0).round)   #return n/5 asterisks, rounded up or down
+  end
+
+  def subsystem_line(name, count)
+    "#{name.rjust(14)} #{asterisks_for(count)} (#{count})"
+  end
+
+  # return the number in the parentheses from this string: "       ui2 **** (19)"
+  def churn_line_to_int(line)
+    /\((\d+)\)/.match(line)[1].to_i
+    # line =~ /\((\d+)\)/
+    # $1.to_i
+  end
+
+  def order_by_descending_change_count(lines)
+    lines.sort do |line_a, line_b|
+      line_a_count = churn_line_to_int(line_a)
+      line_b_count = churn_line_to_int(line_b)
+      - (line_a_count <=> line_b_count)
+    end
+  end
+
 end
 
 if $0 == __FILE__    #(1)
   subsystem_names = ['audit', 'fulfillment', 'persistence',    #(2)
                      'ui', 'util', 'inventory']
   start_date = month_before(Time.now)       #(3)
-
-  puts header(start_date)
+  formatter = Formatter.new
+  puts formatter.header(start_date)
   repository = SubversionRepository.new('root')                   #(4)
   subsystem_lines = subsystem_names.collect do | name |
-    subsystem_line(name, repository.change_count_for(name, start_date)) #(5)  
+    formatter.subsystem_line(name, repository.change_count_for(name, start_date)) #(5)  
   end
-  puts order_by_descending_change_count(subsystem_lines)
+  puts formatter.order_by_descending_change_count(subsystem_lines)
 end
