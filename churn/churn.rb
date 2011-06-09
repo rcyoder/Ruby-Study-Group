@@ -40,12 +40,20 @@ def month_before(t)
 end
 
 class Formatter
+  
+  def initialize
+    @subsystem_lines = []
+  end
 
-  def header(d)
+  def use_date(start_date)
+    @start_date = start_date
+  end
+
+  def header
     #  "Changes since " + d.strftime("%Y-%m-%d")+":"
     #  "Changes since #{d.strftime("%Y-%m-%d")}:"
     #  d.strftime("Changes since %Y-%m-%d:")'
-    "Changes since #{d}:"
+    "Changes since #{@start_date}:"
   end
 
   def asterisks_for(n)
@@ -70,6 +78,14 @@ class Formatter
       - (line_a_count <=> line_b_count)
     end
   end
+  
+  def use_subsystem_with_change_count(name, count)
+    @subsystem_lines << subsystem_line(name, count)
+  end
+  
+  def output
+    [header] + order_by_descending_change_count(@subsystem_lines)
+  end
 
 end
 
@@ -78,10 +94,10 @@ if $0 == __FILE__    #(1)
                      'ui', 'util', 'inventory']
   start_date = month_before(Time.now)       #(3)
   formatter = Formatter.new
-  puts formatter.header(start_date)
+  formatter.use_date(start_date)
   repository = SubversionRepository.new('root')                   #(4)
-  subsystem_lines = subsystem_names.collect do | name |
-    formatter.subsystem_line(name, repository.change_count_for(name, start_date)) #(5)  
+  subsystem_names.collect do | name |
+    formatter.use_subsystem_with_change_count(name, repository.change_count_for(name, start_date)) #(5)  
   end
-  puts formatter.order_by_descending_change_count(subsystem_lines)
+  puts formatter.output
 end
